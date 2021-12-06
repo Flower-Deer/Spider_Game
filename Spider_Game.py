@@ -17,7 +17,7 @@ spiderImage = ['spider01.png','spider02.png','spider03.png','spider04.png','spid
 def writeScore(count):
     global gamePad
     font = pygame.font.SysFont('malgungothic',30)
-    text = font.render('맞춘 거미 수: ' +str(count), True, (255,255,255))
+    text = font.render('맞춘 거미 수: ' +str(count), True, (0,255,0))
     gamePad.blit(text, (10,0))
 
 #놓친 거미 수
@@ -26,6 +26,27 @@ def writePassed(count):
     font = pygame.font.SysFont('malgungothic',30)
     text = font.render('놓친 거미 수: ' +str(count),True,(255,255,255))
     gamePad.blit(text, (570,0))
+
+def writeMessage(text):
+    global gamePad
+    textfont = pygame.font.SysFont('malgungothic', 45)
+    text = textfont.render(text, True, (255,0,0)) 
+    textpos = text.get_rect()
+    textpos.center = (padWidth/2, padHeight/2)
+    gamePad.blit(text, textpos)
+    pygame.display.update()
+    sleep(2)
+    runGame()
+
+#충돌 메시지
+def crash():
+    global gamePad
+    writeMessage('게임오버! 전투기가 부숴졌어요')
+
+#게임 오버
+def gameOver():
+    global gamePad
+    writeMessage('게임오버! 거미를 다 놓쳤어요')
 
 def drawObject(obj, x, y): #게임에 등장하는 객체 드로잉
     global gamePad
@@ -105,6 +126,10 @@ def runGame():
         elif x > padWidth - fighterWidth: #전투기가가 오른쪽 끝으로 가는 경우 멈춤
             x = padWidth - fighterWidth
 
+        if y < spiderY + spiderHeight:
+            if (spiderX > x and spiderX < x + fighterWidth) or (spiderX + spiderWidth > x and spiderX + spiderWidth < x + fighterWidth) :
+                crash()
+
         drawObject(fighter, x, y) #전투기그리기
 
         #레이저 발사 화면에 그리기
@@ -146,6 +171,9 @@ def runGame():
             spiderY = 0
             spiderPassed += 1
 
+        if spiderPassed == 3:
+            gameOver()
+
         #놓친 거미 수 표시
         writePassed(spiderPassed)
 
@@ -162,6 +190,11 @@ def runGame():
             spiderX = random.randrange(0, padWidth - spiderWidth)
             spiderY = 0
             inShot = False
+
+            #거미 맞출 시 속도 증가
+            spiderSpeed += 0.2
+            if spiderSpeed >= 15:
+                spiderSpeed = 15
 
         drawObject(spider, spiderX, spiderY) #거미그림
 
