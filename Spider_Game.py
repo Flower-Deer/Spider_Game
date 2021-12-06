@@ -28,14 +28,17 @@ def writePassed(count):
     gamePad.blit(text, (570,0))
 
 def writeMessage(text):
-    global gamePad
+    global gamePad, gameOverSound
     textfont = pygame.font.SysFont('malgungothic', 45)
     text = textfont.render(text, True, (255,0,0)) 
     textpos = text.get_rect()
     textpos.center = (padWidth/2, padHeight/2)
     gamePad.blit(text, textpos)
     pygame.display.update()
+    pygame.mixer.music.stop() #배경음악정지
+    gameOverSound.play()
     sleep(2)
+    pygame.mixer.music.play(-1) #배경음악재생
     runGame()
 
 #충돌 메시지
@@ -53,7 +56,7 @@ def drawObject(obj, x, y): #게임에 등장하는 객체 드로잉
     gamePad.blit(obj, (x,y)) #blit(복사할 이미지.img/복사할 대상.rect)
 
 def initGame():
-    global gamePad, clock , background, fighter, missile, explosion
+    global gamePad, clock , background, fighter, missile, explosion, missileSound, gameOverSound
     pygame.init()
     gamePad = pygame.display.set_mode((padWidth, padHeight))
     pygame.display.set_caption('Spider_Game') #게임이름
@@ -61,10 +64,14 @@ def initGame():
     fighter = pygame.image.load('fighter.png') #전투기
     missile = pygame.image.load('missile.png') #레이저
     explosion = pygame.image.load('explosion.png') #폭발
+    pygame.mixer.music.load('music.mp3') #배경음악
+    pygame.mixer.music.play(-1) #재생
+    missileSound = pygame.mixer.Sound('missile.mp3')
+    gameOverSound = pygame.mixer.Sound('gameover.mp3')
     clock = pygame.time.Clock()
 
 def runGame():
-    global gamePad, clock, background, fighter, missile, explosion
+    global gamePad, clock, background, fighter, missile, explosion, missileSound
 
     #전투기크기
     fighterSize = fighter.get_rect().size
@@ -109,6 +116,7 @@ def runGame():
                     fighterX += 5
 
                 elif event.key == pygame.K_SPACE:
+                    missileSound.play()
                     missileX = x + fighterWidth/2
                     missileY = y - fighterHeight
                     missileXY.append([missileX, missileY])
