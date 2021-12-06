@@ -1,3 +1,4 @@
+from typing import Text
 import pygame
 import sys
 import random
@@ -11,6 +12,20 @@ padHeight = 600
 spiderImage = ['spider01.png','spider02.png','spider03.png','spider04.png','spider05.png',
                     'spider06.png','spider07.png','spider08.png','spider09.png','spider10.png',
                     'spider11.png','spider12.png','spider13.png','spider14.png','spider15.png']
+
+#맞춘 거미 수 계산
+def writeScore(count):
+    global gamePad
+    font = pygame.font.SysFont('malgungothic',30)
+    text = font.render('맞춘 거미 수: ' +str(count), True, (255,255,255))
+    gamePad.blit(text, (10,0))
+
+#놓친 거미 수
+def writePassed(count):
+    global gamePad
+    font = pygame.font.SysFont('malgungothic',30)
+    text = font.render('놓친 거미 수: ' +str(count),True,(255,255,255))
+    gamePad.blit(text, (570,0))
 
 def drawObject(obj, x, y): #게임에 등장하는 객체 드로잉
     global gamePad
@@ -115,6 +130,9 @@ def runGame():
             for bx, by in missileXY:
                 drawObject(missile, bx, by)
 
+        #맞춘 거미 수 표시
+        writeScore(shotCount)
+
         spiderY += spiderSpeed #거미 아래로 움직임
 
         #거미가 끝으로 떨어진 경우
@@ -126,6 +144,10 @@ def runGame():
             spiderHeight = spiderSize[1]
             spiderX = random.randrange(0, padWidth - spiderHeight)
             spiderY = 0
+            spiderPassed += 1
+
+        #놓친 거미 수 표시
+        writePassed(spiderPassed)
 
         #거미를 맞춘 경우
         if inShot:
